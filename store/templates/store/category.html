@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load customfunction %}
+{% block container %}
+			<div class="row">
+				{% for item in cake %}
+				<div class = 'col-sm-3'>
+					<div class="book-wrapper text-center">
+						<div class="coverpage">
+							<img src="{{ item.coverpage.url }}"/>
+						</div>
+						<a href="{% url 'store:cake' id=item.id %}">{{ item.name }}</a>
+						<a href="{% url 'store:writer'  id=item.writer.id %}">{{ item.writer }}</a>
+						<div class="rating">
+							{{ item.totalrating|averagerating:item.totalreview }}
+							<span class="totalrating">{{ item.totalreview|add:-1 }}</span>
+						</div>
+						<p> {{ item.price }}  </p>
+						<button class="btn btn-warning" id="addTocart" data-book-id="{{ item.id }}">
+								<i class="fa fa-shopping-cart"></i>Add to cart
+						</button>
+					</div>
+				</div>
+				{% endfor %}
+
+			</div>
+			{% if cake|length > 0 %}
+			<div class="d-pagination">
+			    <ul class="pagination">
+				{% if cake.has_previous %}
+					<li class="page-item">
+						<a class="page-link" href="?page=1">First</a>
+					</li>								
+					<li class="page-item">
+						<a class="page-link" href="?page={{ cake.previous_page_number }}">Previous</a>
+					</li>
+				{% endif %}
+				{% for ord in cake.paginator.page_range %}
+					{% if cake.number == ord %}
+						<li class="page-item active">
+							<span class="page-link">{{ ord }}
+								<span class="sr-only">(current)</span>
+							</span>
+						</li>
+					{% elif ord > cake.number|add:'-3' and ord < cake.number|add:'3' %}
+						<li class="page-item">
+							<a class="page-link" href="?page={{ ord }}">{{ ord }}</a>
+						</li>
+
+					{% endif %}
+
+				{% endfor %}
+				 {% if cake.has_next %}
+					<li class="page-item">
+						<a class="page-link" href="?page={{ cake.next_page_number }}">Next</a>
+					</li>
+					<li class="page-item">
+						<a class="page-link" href="?page={{ cake.paginator.num_pages }}">Last</a>
+					</li>
+				{% endif %}
+			    </ul>
+			</div>
+			{% else %}
+			<h3 class="text-center mt-5">There are no cakes Found.</h3>
+			{% endif %}	
+
+{% endblock %}
